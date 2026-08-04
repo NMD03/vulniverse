@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+backend/.venv/
+backend/instance/
+
+# JavaScript
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+
+# Environment
+.env
+.env.*
+!.env.example
