@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "cve-5.2.0": {
+      "baseSchema": "upstream/cve/5.2.0/CVE_Record_Format_bundled.json"
+    },
+    "gcve-bcp-05-1.7": {
+      "baseSchema": "upstream/cve/5.2.0/CVE_Record_Format_bundled.json",
+      "extensionSchemas": [
+        "upstream/gcve/bcp-05/1.7/gcve-bcp-05.schema.json"
+      ],
+      "semanticValidator": "gcve-bcp-05"
+    }
+  }
+}
