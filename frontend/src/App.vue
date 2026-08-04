@@ -1,20 +1,9 @@
 <script setup lang="ts">
-import VulniverseEditor from
-  "./editor/VulniverseEditor.ce.vue";
-
-import { HttpRepository } from
-  "./repositories/HttpRepository";
-
-const repository =
-  new HttpRepository("/api/v1");
+import {
+  RouterView,
+} from "vue-router";
 </script>
 
 <template>
-  <VulniverseEditor
-    :repository="repository"
-    mode="create"
-    profile="cve-5.2.0"
-    @saved="record => console.log('Saved', record)"
-  />
+  <RouterView />
 </template>
-
