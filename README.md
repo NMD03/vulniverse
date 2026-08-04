@@ -25,7 +25,7 @@ poetry run flask \
 
 # Structure
 
-The idea is to have a standalone web application to edit vulnerability records which can be exported and embedded into [Vulnerability-Lookup]()
+The idea is to have a standalone web application to edit vulnerability records which can be exported and embedded into [Vulnerability-Lookup](https://github.com/vulnerability-lookup/vulnerability-lookup)
 
 ```
 Vulniverse
