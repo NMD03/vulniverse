@@ -52,30 +52,36 @@ const displayedIdentifier = computed({
 
 <template>
   <section>
-    <header>
-      <h2>Metadata</h2>
+    <header class="mb-3">
+      <h2 class="h4">Metadata</h2>
 
-      <p>
+      <p class="text-secondary">
         Basic identity and lifecycle information
         for the vulnerability record.
       </p>
     </header>
 
-    <div class="field-grid">
-      <label>
-        Identifier
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-3">
+        <label class="form-label">
+          Identifier
+        </label>
 
         <input
           v-model="displayedIdentifier"
           type="text"
+          class="form-control"
         >
-      </label>
+      </div>
 
-      <label>
-        Record state
+      <div class="col-md-6 col-lg-3">
+        <label class="form-label">
+          Record state
+        </label>
 
         <select
           v-model="metadata.state"
+          class="form-select"
         >
           <option value="">
             Select a state
@@ -89,46 +95,31 @@ const displayedIdentifier = computed({
             Rejected
           </option>
         </select>
-      </label>
+      </div>
 
-      <label>
-        Data type
+      <div class="col-md-6 col-lg-3">
+        <label class="form-label">
+          Data type
+        </label>
 
         <input
           v-model="editor.record.value!.dataType"
           type="text"
+          class="form-control"
         >
-      </label>
+      </div>
 
-      <label>
-        Data version
+      <div class="col-md-6 col-lg-3">
+        <label class="form-label">
+          Data version
+        </label>
 
         <input
           v-model="editor.record.value!.dataVersion"
           type="text"
+          class="form-control"
         >
-      </label>
+      </div>
     </div>
   </section>
 </template>
-
-<style scoped>
-.field-grid {
-  display: grid;
-  grid-template-columns:
-    repeat(auto-fit, minmax(16rem, 1fr));
-  gap: 1rem;
-}
-
-label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
-input,
-select {
-  min-height: 2.5rem;
-  padding: 0.5rem;
-}
-</style>

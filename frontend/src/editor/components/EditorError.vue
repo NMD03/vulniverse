@@ -9,28 +9,20 @@ defineEmits<{
 </script>
 
 <template>
-  <section
-    class="editor-error"
+  <div
+    class="alert alert-danger m-3"
     role="alert"
   >
-    <h2>Unable to open record</h2>
+    <h2 class="h5">Unable to open record</h2>
 
-    <p>{{ error.message }}</p>
+    <p class="mb-3">{{ error.message }}</p>
 
     <button
       type="button"
+      class="btn btn-outline-danger btn-sm"
       @click="$emit('retry')"
     >
       Try again
     </button>
-  </section>
+  </div>
 </template>
-
-<style scoped>
-.editor-error {
-  padding: 1rem;
-  border: 1px solid
-    var(--vulniverse-error, #dc3545);
-  border-radius: 0.375rem;
-}
-</style>

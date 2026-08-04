@@ -18,16 +18,16 @@ defineEmits<{
 
 <template>
   <nav
-    class="editor-navigation"
+    class="nav nav-pills flex-column editor-sidebar"
     aria-label="Editor sections"
   >
     <button
       v-for="item in items"
       :key="item.id"
       type="button"
+      class="nav-link text-start"
       :class="{
-        'editor-navigation__item--active':
-          modelValue === item.id,
+        active: modelValue === item.id,
       }"
       @click="
         $emit(
@@ -40,26 +40,3 @@ defineEmits<{
     </button>
   </nav>
 </template>
-
-<style scoped>
-.editor-navigation {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.editor-navigation button {
-  padding: 0.75rem;
-  text-align: left;
-  background: transparent;
-  border: 0;
-  border-radius: 0.375rem;
-  cursor: pointer;
-}
-
-.editor-navigation__item--active {
-  font-weight: 600;
-  background:
-    var(--vulniverse-selected, #e9ecef);
-}
-</style>

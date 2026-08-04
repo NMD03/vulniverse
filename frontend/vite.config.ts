@@ -16,6 +16,17 @@ export default defineConfig({
     },
   },
 
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // Bootstrap's own SCSS still uses Sass APIs that Dart Sass
+        // deprecates; quietDeps silences warnings from dependencies
+        quietDeps: true,
+        silenceDeprecations: ['import'],
+      },
+    },
+  },
+
   server: {
     port: 5173,
 

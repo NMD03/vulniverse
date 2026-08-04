@@ -10,6 +10,15 @@ export default defineConfig({
     }),
   ],
 
+  css: {
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true,
+        silenceDeprecations: ['import'],
+      },
+    },
+  },
+
   build: {
     lib: {
       entry: resolve(

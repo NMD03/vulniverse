@@ -219,7 +219,7 @@ onMounted(loadRecord);
 
     <div
       v-if="state.loading.value"
-      class="editor-status"
+      class="editor-status text-center text-secondary p-5"
     >
       Loading vulnerability record…
     </div>
@@ -248,58 +248,9 @@ onMounted(loadRecord);
 
     <div
       v-else
-      class="editor-status"
+      class="editor-status text-center text-secondary p-5"
     >
       No vulnerability record is loaded.
     </div>
   </div>
 </template>
-
-<style>
-:host {
-  display: block;
-
-  --vulniverse-text: #212529;
-  --vulniverse-border: #ced4da;
-  --vulniverse-selected: #e9ecef;
-  --vulniverse-error: #dc3545;
-
-  color: var(--vulniverse-text);
-  font-family:
-    var(--vulniverse-font-family, sans-serif);
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-.vulniverse-editor {
-  min-width: 0;
-}
-
-.editor-layout {
-  display: grid;
-  grid-template-columns:
-    minmax(11rem, 15rem)
-    minmax(0, 1fr);
-  gap: 1.5rem;
-  padding: 1rem;
-}
-
-.editor-content {
-  min-width: 0;
-}
-
-.editor-status {
-  padding: 2rem;
-  text-align: center;
-}
-
-@media (max-width: 48rem) {
-  .editor-layout {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

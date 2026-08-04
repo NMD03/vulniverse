@@ -3,8 +3,21 @@ import { defineCustomElement } from "vue";
 import VulniverseEditor from
   "./editor/VulniverseEditor.ce.vue";
 
-const VulniverseEditorElement =
-  defineCustomElement(VulniverseEditor);
+import bootstrapCss from
+  "./editor/styles/editor-bootstrap.scss?inline";
+
+import editorCss from
+  "./editor/styles/editor.scss?inline";
+
+const VulniverseEditorElement = defineCustomElement(
+  VulniverseEditor,
+  {
+    styles: [
+      bootstrapCss,
+      editorCss,
+    ],
+  },
+);
 
 if (!customElements.get("vulniverse-editor")) {
   customElements.define(
@@ -14,9 +27,6 @@ if (!customElements.get("vulniverse-editor")) {
 }
 
 export type {
-  EditorCapabilities,
   EditorRepository,
-  ValidationError,
-  ValidationResult,
   VulnerabilityRecord,
 } from "./editor/contracts";

@@ -59,11 +59,14 @@ function removeDescription(
 
 <template>
   <section>
-    <header class="section-header">
+    <header
+      class="d-flex align-items-start
+             justify-content-between gap-3 mb-3"
+    >
       <div>
-        <h2>Descriptions</h2>
+        <h2 class="h4">Descriptions</h2>
 
-        <p>
+        <p class="text-secondary">
           Describe the vulnerability and its
           security impact.
         </p>
@@ -71,74 +74,62 @@ function removeDescription(
 
       <button
         type="button"
+        class="btn btn-primary"
         @click="addDescription"
       >
         Add description
       </button>
     </header>
 
-    <p v-if="descriptions.length === 0">
+    <p
+      v-if="descriptions.length === 0"
+      class="text-secondary"
+    >
       This record has no descriptions.
     </p>
 
-    <article
+    <div
       v-for="(
         description,
         index
       ) in descriptions"
       :key="index"
-      class="description-card"
+      class="card mb-3"
     >
-      <label>
-        Language
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label">
+            Language
+          </label>
 
-        <input
-          v-model="description.lang"
-          type="text"
-          placeholder="en"
+          <input
+            v-model="description.lang"
+            type="text"
+            placeholder="en"
+            class="form-control"
+          >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            Description
+          </label>
+
+          <textarea
+            v-model="description.value"
+            rows="8"
+            class="form-control"
+          />
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-outline-danger btn-sm"
+          @click="removeDescription(index)"
         >
-      </label>
-
-      <label>
-        Description
-
-        <textarea
-          v-model="description.value"
-          rows="8"
-        />
-      </label>
-
-      <button
-        type="button"
-        @click="removeDescription(index)"
-      >
-        Remove description
-      </button>
-    </article>
+          Remove description
+        </button>
+      </div>
+    </div>
   </section>
 </template>
-
-<style scoped>
-.section-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.description-card {
-  display: grid;
-  gap: 1rem;
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 1px solid
-    var(--vulniverse-border, #ced4da);
-  border-radius: 0.375rem;
-}
-
-label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-</style>

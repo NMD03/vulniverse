@@ -9,69 +9,85 @@ defineProps<{
 
 defineEmits<{
   reload: [];
+  validate: [];
+  save: [];
 }>();
 </script>
 
 <template>
   <header class="editor-header">
-    <div>
-      <p class="editor-header__product">
-        Vulniverse
-      </p>
+    <div
+      class="d-flex flex-column flex-lg-row
+             align-items-lg-start
+             justify-content-between gap-3"
+    >
+      <div>
+        <div
+          class="text-primary fw-semibold
+                 text-uppercase small mb-1"
+        >
+          Vulniverse
+        </div>
 
-      <h1>
-        {{ identifier ?? "New vulnerability record" }}
-      </h1>
+        <h1 class="h3 mb-2">
+          {{ identifier ?? "New vulnerability record" }}
+        </h1>
 
-      <div class="editor-header__metadata">
-        <span v-if="profile">
-          {{ profile }}
-        </span>
+        <div
+          class="d-flex flex-wrap
+                 align-items-center gap-2"
+        >
+          <span
+            v-if="profile"
+            class="badge text-bg-secondary"
+          >
+            {{ profile }}
+          </span>
 
-        <span v-if="isDraft">
-          Draft
-        </span>
+          <span
+            v-if="isDraft"
+            class="badge text-bg-warning"
+          >
+            Draft
+          </span>
 
-        <span v-if="dirty">
-          Unsaved changes
-        </span>
+          <span
+            v-if="dirty"
+            class="badge text-bg-info"
+          >
+            Unsaved changes
+          </span>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          :disabled="loading"
+          @click="$emit('reload')"
+        >
+          Reload
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          :disabled="loading"
+          @click="$emit('validate')"
+        >
+          Validate
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          :disabled="loading"
+          @click="$emit('save')"
+        >
+          Save draft
+        </button>
       </div>
     </div>
-
-    <button
-      type="button"
-      :disabled="loading || !identifier"
-      @click="$emit('reload')"
-    >
-      Reload
-    </button>
   </header>
 </template>
-
-<style scoped>
-.editor-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem;
-  border-bottom: 1px solid
-    var(--vulniverse-border, #ced4da);
-}
-
-.editor-header__product {
-  margin: 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.editor-header h1 {
-  margin: 0.25rem 0;
-}
-
-.editor-header__metadata {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-</style>

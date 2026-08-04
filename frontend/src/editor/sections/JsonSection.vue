@@ -78,10 +78,10 @@ function apply(): void {
 
 <template>
   <section>
-    <header>
-      <h2>Advanced JSON</h2>
+    <header class="mb-3">
+      <h2 class="h4">Advanced JSON</h2>
 
-      <p>
+      <p class="text-secondary">
         Review or replace the complete record.
         Changes are only applied after pressing
         Apply JSON.
@@ -90,7 +90,7 @@ function apply(): void {
 
     <textarea
       v-model="source"
-      class="json-source"
+      class="form-control json-source"
       rows="30"
       spellcheck="false"
     />
@@ -98,13 +98,15 @@ function apply(): void {
     <p
       v-if="parseError"
       role="alert"
+      class="text-danger mt-2"
     >
       {{ parseError }}
     </p>
 
-    <div class="json-actions">
+    <div class="d-flex justify-content-end gap-2 mt-3">
       <button
         type="button"
+        class="btn btn-outline-secondary"
         @click="reset"
       >
         Reset
@@ -112,6 +114,7 @@ function apply(): void {
 
       <button
         type="button"
+        class="btn btn-primary"
         @click="apply"
       >
         Apply JSON
@@ -122,16 +125,12 @@ function apply(): void {
 
 <style scoped>
 .json-source {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 1rem;
-  font-family: monospace;
-}
-
-.json-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
 }
 </style>
