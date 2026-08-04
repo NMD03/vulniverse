@@ -1,9 +1,11 @@
 import type {
-  EditorCapabilities,
   EditorRepository,
-  ValidationResult,
-  VulnerabilityRecord,
+  LoadedRecord,
 } from "@/editor/contracts";
+
+import {
+  RepositoryError,
+} from "./RepositoryError";
 
 export class HttpRepository
   implements EditorRepository
@@ -12,59 +14,12 @@ export class HttpRepository
     private readonly apiRoot = "/api/v1",
   ) {}
 
-  getCapabilities(): Promise<EditorCapabilities> {
-    return this.request("/capabilities");
-  }
-
   async loadRecord(
     identifier: string,
-  ): Promise<VulnerabilityRecord> {
-    const response = await this.request<{
-      record: VulnerabilityRecord;
-    }>(
+  ): Promise<LoadedRecord> {
+    return this.request<LoadedRecord>(
       `/records/${encodeURIComponent(identifier)}`,
     );
-
-    return response.record;
-  }
-
-  async createRecord(
-    record: VulnerabilityRecord,
-    profile: string,
-  ): Promise<VulnerabilityRecord> {
-    const response = await this.request<{
-      record: VulnerabilityRecord;
-    }>("/records", {
-      method: "POST",
-      body: JSON.stringify({
-        record,
-        profile,
-        isDraft: true,
-      }),
-    });
-
-    return response.record;
-  }
-
-  updateRecord(
-    _identifier: string,
-    _record: VulnerabilityRecord,
-    _profile: string,
-  ): Promise<VulnerabilityRecord> {
-    throw new Error("Update endpoint is not implemented yet.");
-  }
-
-  validateRecord(
-    record: VulnerabilityRecord,
-    profile: string,
-  ): Promise<ValidationResult> {
-    return this.request("/validate", {
-      method: "POST",
-      body: JSON.stringify({
-        record,
-        profile,
-      }),
-    });
   }
 
   private async request<T>(
@@ -76,7 +31,10 @@ export class HttpRepository
     headers.set("Accept", "application/json");
 
     if (init.body !== undefined) {
-      headers.set("Content-Type", "application/json");
+      headers.set(
+        "Content-Type",
+        "application/json",
+      );
     }
 
     const response = await fetch(
@@ -93,9 +51,11 @@ export class HttpRepository
       .catch(() => null);
 
     if (!response.ok) {
-      throw new Error(
-        body?.message
-        ?? `${response.status} ${response.statusText}`,
+      throw new RepositoryError(
+        body?.message ??
+          `${response.status} ${response.statusText}`,
+        response.status,
+        body,
       );
     }
 

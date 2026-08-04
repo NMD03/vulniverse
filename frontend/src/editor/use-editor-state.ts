@@ -1,0 +1,89 @@
+import {
+  computed,
+  ref,
+} from "vue";
+
+import type {
+  LoadedRecord,
+  VulnerabilityRecord,
+} from "./contracts";
+
+export function useEditorState() {
+  const record =
+    ref<VulnerabilityRecord | null>(null);
+
+  const originalRecord =
+    ref<VulnerabilityRecord | null>(null);
+
+  const identifier =
+    ref<string | null>(null);
+
+  const profile =
+    ref<string | null>(null);
+
+  const isDraft = ref(false);
+  const loading = ref(false);
+  const loadError = ref<Error | null>(null);
+
+  const dirty = computed(() => {
+    if (
+      !record.value ||
+      !originalRecord.value
+    ) {
+      return false;
+    }
+
+    /*
+     * Suitable for the first implementation.
+     * Replace this later with a revision counter or
+     * normalized deep comparison.
+     */
+    return JSON.stringify(record.value) !==
+      JSON.stringify(originalRecord.value);
+  });
+
+  function replaceRecord(
+    loaded: LoadedRecord,
+  ): void {
+    /*
+     * structuredClone prevents the editable record and
+     * original record from sharing nested references.
+     */
+    record.value =
+      structuredClone(loaded.record);
+
+    originalRecord.value =
+      structuredClone(loaded.record);
+
+    identifier.value = loaded.identifier;
+    profile.value = loaded.profile;
+    isDraft.value = loaded.isDraft;
+
+    loadError.value = null;
+  }
+
+  function clear(): void {
+    record.value = null;
+    originalRecord.value = null;
+    identifier.value = null;
+    profile.value = null;
+    isDraft.value = false;
+    loadError.value = null;
+  }
+
+  return {
+    record,
+    originalRecord,
+    identifier,
+    profile,
+    isDraft,
+    loading,
+    loadError,
+    dirty,
+    replaceRecord,
+    clear,
+  };
+}
+
+export type EditorState =
+  ReturnType<typeof useEditorState>;
