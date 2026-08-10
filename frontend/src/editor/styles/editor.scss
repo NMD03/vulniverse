@@ -76,6 +76,161 @@
     monospace;
 }
 
+/*
+ * The "Generated form" tab is rendered by @jsonforms/vue-vanilla,
+ * driven entirely by schemas/editor/cve.layout.json + the schema
+ * generator. These rules restyle its fixed class names (see
+ * @jsonforms/vue-vanilla's defaultStyles.ts) to match the rest of
+ * the editor instead of writing custom renderers, so every field
+ * the generator produces — now or later — is styled automatically.
+ */
+
+.vulniverse-editor {
+  .categorization-category {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--bs-border-color);
+  }
+
+  .categorization-category button {
+    padding: 0.5rem 1rem;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--bs-secondary-color, #6c757d);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .categorization-category button:hover {
+    color: var(--bs-primary);
+  }
+
+  .categorization-selected {
+    color: var(--bs-primary) !important;
+    border-bottom-color: var(--bs-primary) !important;
+  }
+
+  .control {
+    margin-bottom: 1rem;
+  }
+
+  .control > .label {
+    display: block;
+    margin-bottom: 0.375rem;
+    font-weight: 600;
+  }
+
+  .control > .required {
+    font-weight: 600;
+  }
+
+  .asterisk {
+    color: var(--bs-danger, #dc3545);
+  }
+
+  .control > .wrapper > .input,
+  .control > .wrapper > .select,
+  .control > .wrapper > .text-area {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    color: var(--bs-body-color);
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.375rem;
+    font-weight: 400;
+  }
+
+  .control > .wrapper > .input:focus,
+  .control > .wrapper > .select:focus,
+  .control > .wrapper > .text-area:focus {
+    outline: 0;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem
+      rgba(var(--bs-primary-rgb), 0.2);
+  }
+
+  .control > .description {
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--bs-secondary-color, #6c757d);
+  }
+
+  .control > .error {
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--bs-danger, #dc3545);
+  }
+
+  .array-list-add,
+  .array-list-item-move-up,
+  .array-list-item-move-down,
+  .array-list-item-delete {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.375rem;
+    background: var(--bs-body-bg);
+    cursor: pointer;
+  }
+
+  .array-list-item-wrapper {
+    margin-bottom: 1rem;
+  }
+
+  .array-list-item-label {
+    /*
+     * vanilla.css sets height: 1.5em / line-height: 1.5em on this
+     * class for its own compact look; overridden here since our
+     * padding needs more vertical room than that leaves.
+     */
+    height: auto;
+    line-height: 1.4;
+
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--bs-tertiary-bg, #f8f9fa);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.375rem 0.375rem 0 0;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .array-list-item-toolbar {
+    align-items: center;
+  }
+
+  .array-list-item-content {
+    padding: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-top: 0;
+    border-radius: 0 0 0.375rem 0.375rem;
+  }
+
+  /*
+   * @jsonforms/vue-vanilla's ArrayListElement defaults every item
+   * to collapsed (initiallyExpanded: false) and never overrides
+   * it, including for an item just added via "+" — addItem always
+   * appends, so the newly added item is reliably the last one.
+   * Force only that one open by default; every item (including
+   * this one) still toggles normally via its own click handler —
+   * except that toggling *this* one closed has no visible effect,
+   * since the rule keeps re-opening it regardless of state.
+   */
+  .array-list-item-wrapper:last-child .array-list-item-content {
+    display: block;
+  }
+
+  .group {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.375rem;
+  }
+}
+
 @media (max-width: 768px) {
   .editor-header {
     padding: 1rem;

@@ -64,6 +64,24 @@ export interface ValidationResult {
   errors: ValidationError[];
 }
 
+/**
+ * Thrown by an EditorRepository when createRecord/updateRecord is
+ * rejected specifically because the record fails schema validation
+ * (as opposed to a network failure, a 404, or a conflict). Kept
+ * separate from repository-specific error classes so the editor can
+ * react to it regardless of which EditorRepository is in use.
+ */
+export class RecordValidationError extends Error {
+  constructor(
+    message: string,
+    public readonly errors: ValidationError[],
+  ) {
+    super(message);
+
+    this.name = "RecordValidationError";
+  }
+}
+
 export interface EditorRepository {
   loadRecord(
     identifier: string,

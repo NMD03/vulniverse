@@ -16,6 +16,10 @@ import type {
 } from "./contracts";
 
 import {
+  RecordValidationError,
+} from "./contracts";
+
+import {
   editorStateKey,
 } from "./editor-context";
 
@@ -254,6 +258,11 @@ async function handleSave(): Promise<void> {
 
     emit("loaded", saved.identifier);
   } catch (error) {
+    if (error instanceof RecordValidationError) {
+      state.validationErrors.value = error.errors;
+      return;
+    }
+
     const normalized = normalizeError(
       error,
       "Unable to save the record.",

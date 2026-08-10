@@ -1,0 +1,103 @@
+{
+  "variant": "Published",
+  "sections": [
+    {
+      "id": "metadata",
+      "label": "Metadata",
+      "paths": [
+        "dataType",
+        "dataVersion",
+        "cveMetadata",
+        "containers.cna.providerMetadata"
+      ]
+    },
+    {
+      "id": "summary",
+      "label": "Summary",
+      "paths": [
+        "containers.cna.title",
+        "containers.cna.descriptions"
+      ]
+    },
+    {
+      "id": "affected",
+      "label": "Affected products",
+      "paths": [
+        "containers.cna.affected"
+      ]
+    },
+    {
+      "id": "classification",
+      "label": "Classification",
+      "paths": [
+        "containers.cna.problemTypes",
+        "containers.cna.impacts"
+      ]
+    },
+    {
+      "id": "severity",
+      "label": "Severity",
+      "paths": [
+        "containers.cna.metrics"
+      ]
+    },
+    {
+      "id": "guidance",
+      "label": "Guidance",
+      "paths": [
+        "containers.cna.configurations",
+        "containers.cna.workarounds",
+        "containers.cna.solutions",
+        "containers.cna.exploits"
+      ]
+    },
+    {
+      "id": "references",
+      "label": "References",
+      "paths": [
+        "containers.cna.references"
+      ]
+    },
+    {
+      "id": "credits",
+      "label": "Credits and timeline",
+      "paths": [
+        "containers.cna.credits",
+        "containers.cna.timeline",
+        "containers.cna.dateAssigned",
+        "containers.cna.datePublic",
+        "containers.cna.source"
+      ]
+    }
+  ],
+  "hiddenPaths": [
+    "containers.adp"
+  ],
+  "controlOptions": {
+    "dataType": {
+      "readonly": true
+    },
+    "dataVersion": {
+      "readonly": true
+    },
+    "containers.cna.descriptions": {
+      "detail": "GENERATED",
+      "showSortButtons": true,
+      "elementLabelProp": "lang"
+    },
+    "containers.cna.affected": {
+      "renderer": "vulniverse-affected",
+      "detail": "GENERATED",
+      "showSortButtons": true
+    },
+    "containers.cna.metrics": {
+      "renderer": "vulniverse-metrics"
+    },
+    "containers.cna.references": {
+      "renderer": "vulniverse-references",
+      "detail": "GENERATED",
+      "showSortButtons": true,
+      "elementLabelProp": "url"
+    }
+  }
+}

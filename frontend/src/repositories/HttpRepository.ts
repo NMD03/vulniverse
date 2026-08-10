@@ -6,6 +6,10 @@ import type {
 } from "@/editor/contracts";
 
 import {
+  RecordValidationError,
+} from "@/editor/contracts";
+
+import {
   RepositoryError,
 } from "./RepositoryError";
 
@@ -106,6 +110,16 @@ export class HttpRepository
       .catch(() => null);
 
     if (!response.ok) {
+      if (
+        response.status === 422 &&
+        Array.isArray(body?.errors)
+      ) {
+        throw new RecordValidationError(
+          body.message ?? "The record is not publishable.",
+          body.errors,
+        );
+      }
+
       throw new RepositoryError(
         body?.message ??
           `${response.status} ${response.statusText}`,

@@ -1,0 +1,22 @@
+{
+  "profile": "cve-5.2.0",
+  "variant": "Published",
+  "officialSchema": "schemas/upstream/cve/5.2.0/CVE_Record_Format_bundled.json",
+  "categories": [
+    "metadata",
+    "summary",
+    "affected",
+    "classification",
+    "severity",
+    "guidance",
+    "references",
+    "credits",
+    "additional"
+  ],
+  "missingConfiguredPaths": [],
+  "automaticallyAddedPaths": [
+    "containers.cna.cpeApplicability",
+    "containers.cna.tags",
+    "containers.cna.taxonomyMappings"
+  ]
+}

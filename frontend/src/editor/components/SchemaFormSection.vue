@@ -2,6 +2,7 @@
 import {
   computed,
   shallowRef,
+  toRaw,
 } from "vue";
 
 import {
@@ -11,6 +12,10 @@ import {
 import {
   vanillaRenderers,
 } from "@jsonforms/vue-vanilla";
+
+import {
+  customRenderers,
+} from "../renderers";
 
 import type {
   JsonSchema,
@@ -38,12 +43,23 @@ const uiSchema = editorUiSchema as UISchemaElement;
 
 const renderers = shallowRef(
   Object.freeze([
+    ...customRenderers,
     ...vanillaRenderers,
   ]),
 );
 
 const formData = computed(() => {
-  return editor.record.value ?? {};
+  /*
+   * JsonForms mutates and deep-inspects this object internally
+   * (default-value filling, ajv validation). Handing it the Vue
+   * reactive Proxy that editor.record.value returns causes every
+   * internal read/write to round-trip through Vue's reactivity
+   * tracking, which feeds back into onChange and recurses forever.
+   * toRaw() gives it the plain underlying object instead.
+   */
+  return editor.record.value
+    ? toRaw(editor.record.value)
+    : {};
 });
 
 function handleChange(event: {

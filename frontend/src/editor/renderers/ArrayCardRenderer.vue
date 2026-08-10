@@ -1,0 +1,231 @@
+<script setup lang="ts">
+import {
+  computed,
+} from "vue";
+
+import {
+  DispatchRenderer,
+  rendererProps,
+  useJsonFormsArrayControl,
+  useJsonFormsControl,
+} from "@jsonforms/vue";
+
+import {
+  composePaths,
+  createDefaultValue,
+  findUISchema,
+  getFirstPrimitiveProp,
+} from "@jsonforms/core";
+
+import type {
+  ControlElement,
+} from "@jsonforms/core";
+
+import {
+  useCollapsibleItems,
+} from "./use-collapsible-items";
+
+const props = defineProps({
+  ...rendererProps<ControlElement>(),
+});
+
+const {
+  control,
+  addItem,
+  removeItems,
+} = useJsonFormsArrayControl(props);
+
+/*
+ * removeItems only ever splices the array. For a property that's
+ * required on its parent, disabling delete at schema.minItems
+ * (below) is correct — there's no valid fallback. But for an
+ * optional property (control.required, already computed by
+ * JSONForms itself), splicing down below minItems leaves a
+ * permanently invalid AND — in the vanilla renderer — permanently
+ * undeletable state. handleChange lets us clear the whole property
+ * instead, which is what "optional, but non-empty if present"
+ * actually means once you want zero entries.
+ */
+const { handleChange } = useJsonFormsControl(props);
+
+const items = computed(() => {
+  return (control.value.data ?? []) as unknown[];
+});
+
+const isObjectItems = computed(() => {
+  return control.value.schema?.type === "object";
+});
+
+const atMinItems = computed(() => {
+  const minItems = control.value.arraySchema?.minItems ?? 0;
+
+  return items.value.length <= minItems;
+});
+
+/*
+ * findUISchema's fallback generator expects an object schema (it
+ * builds a Group of Controls, one per property). For a primitive
+ * item (string/number/boolean array, e.g. cpes/modules/platforms)
+ * there are no properties to generate — scope "#" dispatches
+ * straight at the item value itself, landing on the ordinary
+ * String/Number/Boolean control.
+ */
+const childUiSchema = computed(() => {
+  if (!isObjectItems.value) {
+    return {
+      type: "Control",
+      scope: "#",
+    } as ControlElement;
+  }
+
+  return findUISchema(
+    control.value.uischemas,
+    control.value.schema,
+    control.value.uischema.scope,
+    control.value.path,
+    undefined,
+    control.value.uischema,
+    control.value.rootSchema,
+  );
+});
+
+const { isExpanded, toggle } = useCollapsibleItems(
+  computed(() => items.value.length),
+);
+
+function labelFor(
+  index: number,
+): string {
+  const item = items.value[index];
+
+  if (typeof item === "string" && item.length > 0) {
+    return item;
+  }
+
+  if (typeof item === "number" || typeof item === "boolean") {
+    return String(item);
+  }
+
+  const labelProperty = isObjectItems.value
+    ? getFirstPrimitiveProp(control.value.schema)
+    : undefined;
+
+  const value = labelProperty && item && typeof item === "object"
+    ? (item as Record<string, unknown>)[labelProperty]
+    : undefined;
+
+  return typeof value === "string" && value.length > 0
+    ? value
+    : `Item ${index + 1}`;
+}
+
+function itemPath(
+  index: number,
+): string {
+  return composePaths(
+    control.value.path,
+    `${index}`,
+  );
+}
+
+function addEntry(): void {
+  addItem(
+    control.value.path,
+    createDefaultValue(
+      control.value.schema,
+      control.value.rootSchema,
+    ),
+  )?.();
+}
+
+function deleteEntry(
+  index: number,
+): void {
+  if (atMinItems.value) {
+    if (control.value.required) {
+      return;
+    }
+
+    handleChange(
+      control.value.path,
+      undefined,
+    );
+
+    return;
+  }
+
+  removeItems?.(control.value.path, [index])?.();
+}
+</script>
+
+<template>
+  <fieldset
+    v-if="control.visible"
+    class="mb-3"
+  >
+    <legend class="d-flex align-items-center justify-content-between h6">
+      {{ control.label }}
+
+      <button
+        type="button"
+        class="btn btn-outline-primary btn-sm"
+        :disabled="!control.enabled"
+        @click="addEntry"
+      >
+        + Add
+      </button>
+    </legend>
+
+    <p
+      v-if="items.length === 0"
+      class="text-secondary small"
+    >
+      No data
+    </p>
+
+    <div
+      v-for="(item, index) in items"
+      :key="`${control.path}-${index}`"
+      class="card mb-2"
+    >
+      <div class="card-header d-flex justify-content-between align-items-center py-2">
+        <span class="fw-semibold small">
+          {{ labelFor(index) }}
+        </span>
+
+        <div class="d-flex gap-1">
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            @click="toggle(index)"
+          >
+            {{ isExpanded(index) ? "▾" : "▸" }}
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-outline-danger btn-sm"
+            :disabled="!control.enabled || (control.required && atMinItems)"
+            @click="deleteEntry(index)"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+
+      <div
+        v-if="isExpanded(index)"
+        class="card-body"
+      >
+        <dispatch-renderer
+          :schema="control.schema"
+          :uischema="childUiSchema"
+          :path="itemPath(index)"
+          :enabled="control.enabled"
+          :renderers="control.renderers"
+          :cells="control.cells"
+        />
+      </div>
+    </div>
+  </fieldset>
+</template>

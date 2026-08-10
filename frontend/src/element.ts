@@ -17,8 +17,8 @@ const VulniverseEditorElement = defineCustomElement(
   {
     styles: [
       bootstrapCss,
-      editorCss,
       jsonFormsCss,
+      editorCss,
     ],
   },
 );
