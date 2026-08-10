@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from jsonschema import FormatChecker
+from jsonschema.exceptions import ValidationError
 from jsonschema.protocols import Validator
 from jsonschema.validators import validator_for
 
@@ -36,14 +37,54 @@ def get_cve_validator() -> Validator:
     )
 
 
+def expand_composite_error(
+    error: ValidationError,
+) -> list[ValidationError]:
+    """
+    Replace a oneOf/anyOf failure with the specific errors from
+    whichever candidate schema came closest to matching, instead
+    of the single generic "is not valid under any of the given
+    schemas" message that hides all of them.
+    """
+
+    if not error.context:
+        return [error]
+
+    branches: dict[Any, list[ValidationError]] = {}
+
+    for sub_error in error.context:
+        branch_key = tuple(sub_error.absolute_schema_path)[:2]
+        branches.setdefault(branch_key, []).append(sub_error)
+
+    closest_branch = min(
+        branches.values(),
+        key=len,
+    )
+
+    expanded: list[ValidationError] = []
+
+    for sub_error in closest_branch:
+        expanded.extend(
+            expand_composite_error(sub_error),
+        )
+
+    return expanded
+
+
 def validate_record(
     record: dict[str, Any],
     profile: str,
 ) -> list[dict[str, Any]]:
     validator = get_cve_validator()
 
-    validation_errors = sorted(
-        validator.iter_errors(record),
+    validation_errors: list[ValidationError] = []
+
+    for error in validator.iter_errors(record):
+        validation_errors.extend(
+            expand_composite_error(error),
+        )
+
+    validation_errors.sort(
         key=lambda error: list(error.absolute_path),
     )
 
