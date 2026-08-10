@@ -6,6 +6,9 @@
     // Extra safety for array and object lookups, but may have false positives.
     "noUncheckedIndexedAccess": true,
 
+    // Needed to import the generated JSON Schema / UI Schema files.
+    "resolveJsonModule": true,
+
     // Path mapping for cleaner imports.
     "paths": {
       "@/*": ["./src/*"]

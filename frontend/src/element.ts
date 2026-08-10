@@ -9,12 +9,16 @@ import bootstrapCss from
 import editorCss from
   "./editor/styles/editor.scss?inline";
 
+import jsonFormsCss from
+  "@jsonforms/vue-vanilla/vanilla.css?inline";
+
 const VulniverseEditorElement = defineCustomElement(
   VulniverseEditor,
   {
     styles: [
       bootstrapCss,
       editorCss,
+      jsonFormsCss,
     ],
   },
 );

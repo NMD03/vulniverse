@@ -5,6 +5,7 @@ import App from './App.vue'
 import { router } from './router'
 
 import "./assets/main.scss"
+import "@jsonforms/vue-vanilla/vanilla.css"
 
 const app = createApp(App)
 

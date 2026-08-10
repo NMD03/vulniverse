@@ -5,6 +5,7 @@ import {
 
 import type {
   LoadedRecord,
+  ValidationError,
   VulnerabilityRecord,
 } from "./contracts";
 
@@ -25,6 +26,10 @@ export function useEditorState() {
   const loading = ref(false);
   const loadError = ref<Error | null>(null);
 
+  const saving = ref(false);
+  const saveError = ref<Error | null>(null);
+  const validationErrors = ref<ValidationError[]>([]);
+
   const dirty = computed(() => {
     if (
       !record.value ||
@@ -33,11 +38,6 @@ export function useEditorState() {
       return false;
     }
 
-    /*
-     * Suitable for the first implementation.
-     * Replace this later with a revision counter or
-     * normalized deep comparison.
-     */
     return JSON.stringify(record.value) !==
       JSON.stringify(originalRecord.value);
   });
@@ -45,10 +45,6 @@ export function useEditorState() {
   function replaceRecord(
     loaded: LoadedRecord,
   ): void {
-    /*
-     * structuredClone prevents the editable record and
-     * original record from sharing nested references.
-     */
     record.value =
       structuredClone(loaded.record);
 
@@ -69,6 +65,8 @@ export function useEditorState() {
     profile.value = null;
     isDraft.value = false;
     loadError.value = null;
+    saveError.value = null;
+    validationErrors.value = [];
   }
 
   return {
@@ -79,6 +77,9 @@ export function useEditorState() {
     isDraft,
     loading,
     loadError,
+    saving,
+    saveError,
+    validationErrors,
     dirty,
     replaceRecord,
     clear,

@@ -1,6 +1,8 @@
 import type {
   EditorRepository,
   LoadedRecord,
+  ValidationResult,
+  VulnerabilityRecord,
 } from "@/editor/contracts";
 
 import {
@@ -19,6 +21,59 @@ export class HttpRepository
   ): Promise<LoadedRecord> {
     return this.request<LoadedRecord>(
       `/records/${encodeURIComponent(identifier)}`,
+    );
+  }
+
+  async createRecord(
+    record: VulnerabilityRecord,
+    profile: string,
+    isDraft: boolean,
+  ): Promise<LoadedRecord> {
+    return this.request<LoadedRecord>(
+      "/records",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          record,
+          profile,
+          isDraft,
+        }),
+      },
+    );
+  }
+
+  async updateRecord(
+    identifier: string,
+    record: VulnerabilityRecord,
+    profile: string,
+    isDraft: boolean,
+  ): Promise<LoadedRecord> {
+    return this.request<LoadedRecord>(
+      `/records/${encodeURIComponent(identifier)}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({
+          record,
+          profile,
+          isDraft,
+        }),
+      },
+    );
+  }
+
+  async validateRecord(
+    record: VulnerabilityRecord,
+    profile: string,
+  ): Promise<ValidationResult> {
+    return this.request<ValidationResult>(
+      "/validate",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          record,
+          profile,
+        }),
+      },
     );
   }
 

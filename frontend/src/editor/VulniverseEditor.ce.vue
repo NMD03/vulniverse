@@ -41,6 +41,9 @@ import DescriptionsSection from
 import JsonSection from
   "./sections/JsonSection.vue";
 
+import SchemaFormSection from
+  "./components/SchemaFormSection.vue";
+
 const props = withDefaults(
   defineProps<{
     repository?: EditorRepository;
@@ -84,6 +87,10 @@ const navigationItems = [
     label: "Descriptions",
   },
   {
+    id: "editor",
+    label: "Editor",
+  },
+  {
     id: "json",
     label: "Advanced JSON",
   },
@@ -94,6 +101,7 @@ const sectionComponents:
     metadata: MetadataSection,
     descriptions: DescriptionsSection,
     json: JsonSection,
+    editor: SchemaFormSection,
   };
 
 const currentSection = computed(() => {
@@ -102,6 +110,15 @@ const currentSection = computed(() => {
     MetadataSection
   );
 });
+
+function normalizeError(
+  error: unknown,
+  fallbackMessage: string,
+): Error {
+  return error instanceof Error
+    ? error
+    : new Error(fallbackMessage);
+}
 
 async function loadRecord(): Promise<void> {
   if (props.mode !== "edit") {
@@ -167,17 +184,85 @@ async function loadRecord(): Promise<void> {
 
     emit("ready");
   } catch (error) {
-    const normalized =
-      error instanceof Error
-        ? error
-        : new Error(
-            "Unable to load vulnerability record.",
-          );
+    const normalized = normalizeError(
+      error,
+      "Unable to load vulnerability record.",
+    );
 
     state.loadError.value = normalized;
     emit("error", normalized);
   } finally {
     state.loading.value = false;
+  }
+}
+
+async function handleValidate(): Promise<void> {
+  if (!props.repository || !state.record.value) {
+    return;
+  }
+
+  state.saving.value = true;
+  state.saveError.value = null;
+
+  try {
+    const result =
+      await props.repository.validateRecord(
+        state.record.value,
+        state.profile.value ?? "cve-5.2.0",
+      );
+
+    state.validationErrors.value = result.errors;
+  } catch (error) {
+    const normalized = normalizeError(
+      error,
+      "Unable to validate the record.",
+    );
+
+    state.saveError.value = normalized;
+    emit("error", normalized);
+  } finally {
+    state.saving.value = false;
+  }
+}
+
+async function handleSave(): Promise<void> {
+  if (!props.repository || !state.record.value) {
+    return;
+  }
+
+  state.saving.value = true;
+  state.saveError.value = null;
+
+  const profile = state.profile.value ?? "cve-5.2.0";
+
+  try {
+    const saved = state.identifier.value
+      ? await props.repository.updateRecord(
+          state.identifier.value,
+          state.record.value,
+          profile,
+          state.isDraft.value,
+        )
+      : await props.repository.createRecord(
+          state.record.value,
+          profile,
+          state.isDraft.value,
+        );
+
+    state.replaceRecord(saved);
+    state.validationErrors.value = [];
+
+    emit("loaded", saved.identifier);
+  } catch (error) {
+    const normalized = normalizeError(
+      error,
+      "Unable to save the record.",
+    );
+
+    state.saveError.value = normalized;
+    emit("error", normalized);
+  } finally {
+    state.saving.value = false;
   }
 }
 
@@ -213,9 +298,46 @@ onMounted(loadRecord);
       :profile="state.profile.value"
       :is-draft="state.isDraft.value"
       :dirty="state.dirty.value"
-      :loading="state.loading.value"
+      :loading="state.loading.value || state.saving.value"
       @reload="loadRecord"
+      @validate="handleValidate"
+      @save="handleSave"
     />
+
+    <div
+      v-if="state.saveError.value"
+      class="alert alert-danger m-3"
+      role="alert"
+    >
+      {{ state.saveError.value.message }}
+    </div>
+
+    <div
+      v-if="state.validationErrors.value.length"
+      class="alert alert-warning m-3"
+      role="alert"
+    >
+      <p class="mb-2">
+        The record has
+        {{ state.validationErrors.value.length }}
+        validation
+        {{
+          state.validationErrors.value.length === 1
+            ? "error"
+            : "errors"
+        }}.
+      </p>
+
+      <ul class="mb-0">
+        <li
+          v-for="(error, index) in state.validationErrors.value"
+          :key="index"
+        >
+          <code>{{ error.path.join(".") || "record" }}</code>
+          — {{ error.message }}
+        </li>
+      </ul>
+    </div>
 
     <div
       v-if="state.loading.value"

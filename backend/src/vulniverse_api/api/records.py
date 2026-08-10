@@ -95,3 +95,57 @@ def create_record() -> tuple[dict, int]:
         "record": document,
         "isDraft": is_draft,
     }, 201
+
+
+@api_bp.put("/records/<string:identifier>")
+def update_record(identifier: str) -> tuple[dict, int]:
+    record = VulnerabilityRecord.query.filter_by(
+        identifier=identifier,
+    ).first()
+
+    if record is None:
+        return {"message": "Record not found."}, 404
+
+    payload = request.get_json(silent=True)
+
+    if not isinstance(payload, dict):
+        return {"message": "A JSON object is required."}, 400
+
+    document = payload.get("record")
+    profile = payload.get("profile", record.profile)
+    is_draft = bool(payload.get("isDraft", record.is_draft))
+
+    if not isinstance(document, dict):
+        return {"message": "A record object is required."}, 400
+
+    document_identifier = extract_identifier(document)
+
+    if (
+        document_identifier
+        and document_identifier != identifier
+    ):
+        return {
+            "message": "The record identifier cannot be changed.",
+        }, 400
+
+    if not is_draft:
+        errors = validate_record(document, profile)
+
+        if errors:
+            return {
+                "message": "The record is not publishable.",
+                "errors": errors,
+            }, 422
+
+    record.profile = profile
+    record.document = document
+    record.is_draft = is_draft
+
+    db.session.commit()
+
+    return {
+        "identifier": identifier,
+        "profile": profile,
+        "record": document,
+        "isDraft": is_draft,
+    }, 200

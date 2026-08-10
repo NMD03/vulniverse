@@ -51,8 +51,39 @@ export interface LoadedRecord {
   isDraft: boolean;
 }
 
+export interface ValidationError {
+  path: Array<string | number>;
+  schemaPath: Array<string | number>;
+  message: string;
+  validator?: string;
+}
+
+export interface ValidationResult {
+  valid: boolean;
+  profile: string;
+  errors: ValidationError[];
+}
+
 export interface EditorRepository {
   loadRecord(
     identifier: string,
   ): Promise<LoadedRecord>;
+
+  createRecord(
+    record: VulnerabilityRecord,
+    profile: string,
+    isDraft: boolean,
+  ): Promise<LoadedRecord>;
+
+  updateRecord(
+    identifier: string,
+    record: VulnerabilityRecord,
+    profile: string,
+    isDraft: boolean,
+  ): Promise<LoadedRecord>;
+
+  validateRecord(
+    record: VulnerabilityRecord,
+    profile: string,
+  ): Promise<ValidationResult>;
 }
