@@ -13,12 +13,12 @@ import {
 import {
   composePaths,
   createDefaultValue,
-  findUISchema,
   getFirstPrimitiveProp,
 } from "@jsonforms/core";
 
 import type {
   ControlElement,
+  UISchemaElement,
 } from "@jsonforms/core";
 
 import {
@@ -63,14 +63,21 @@ const atMinItems = computed(() => {
 });
 
 /*
- * findUISchema's fallback generator expects an object schema (it
- * builds a Group of Controls, one per property). For a primitive
- * item (string/number/boolean array, e.g. cpes/modules/platforms)
- * there are no properties to generate — scope "#" dispatches
- * straight at the item value itself, landing on the ordinary
- * String/Number/Boolean control.
+ * @jsonforms/core's Generate.uiSchema — what findUISchema falls
+ * back to for an array item with no explicit uischema — is what
+ * crashed on "affected" (13 properties) and, confirmed by testing,
+ * crashes the same way on anything else with enough properties
+ * (containers.adp's 19). AffectedRenderer avoided it by hand-
+ * building a flat list of Controls instead of asking JSONForms to
+ * auto-generate one; this does the same thing generically for any
+ * object-item array, so no array can hit that path again — the
+ * fields themselves still go through the normal String/Enum/Array
+ * renderers, unchanged. For a primitive item (string/number/
+ * boolean array, e.g. cpes/modules/platforms) there are no
+ * properties to flatten — scope "#" dispatches straight at the
+ * item value itself.
  */
-const childUiSchema = computed(() => {
+const childUiSchema = computed((): UISchemaElement => {
   if (!isObjectItems.value) {
     return {
       type: "Control",
@@ -78,15 +85,15 @@ const childUiSchema = computed(() => {
     } as ControlElement;
   }
 
-  return findUISchema(
-    control.value.uischemas,
-    control.value.schema,
-    control.value.uischema.scope,
-    control.value.path,
-    undefined,
-    control.value.uischema,
-    control.value.rootSchema,
-  );
+  const properties = control.value.schema?.properties ?? {};
+
+  return {
+    type: "VerticalLayout",
+    elements: Object.keys(properties).map((key) => ({
+      type: "Control",
+      scope: `#/properties/${key}`,
+    })),
+  };
 });
 
 const { isExpanded, toggle } = useCollapsibleItems(

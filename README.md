@@ -46,3 +46,13 @@ Vulniverse
 cd frontend
 npm run build:element
 ```
+
+# Build Schemas
+
+The final layout can be configured in `schemas/editor/cve.layout.json`.
+
+Run the schema generation script:
+```bash
+python3 scripts/generate_editor_schemas.py
+```
+
